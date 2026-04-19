@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASD Security Toolkit - ARIFI Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #050505; font-family: 'Courier New', Courier, monospace; }
+        .glow { text-shadow: 0 0 10px #22c55e; }
+        .terminal-box { border: 1px solid #22c55e; box-shadow: 0 0 15px rgba(34, 197, 94, 0.2); }
+    </style>
+</head>
+<body class="text-green-500 p-5">
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-10">
+            <pre class="text-[10px] md:text-sm glow leading-tight">
+ █████╗ ██████╗ ██╗███████╗██╗
+██╔══██╗██╔══██╗██║██╔════╝██║
+███████║██████╔╝██║█████╗  ██║
+██╔══██║██╔══██╗██║██╔══╝  ██║
+██║  ██║██║  ██║██║██║     ██║
+╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝
+            </pre>
+            <p class="text-purple-500 font-bold mt-2 uppercase tracking-widest">▶ ARIFI ON TOP ◀</p>
+            <div class="h-1 bg-green-900 my-4"></div>
+            <div class="flex justify-between text-xs px-2">
+                <span>DEVELOPER: ARIFI</span>
+                <span>STATUS: SECURE</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="terminal-box p-4 rounded bg-black/50">
+                <h2 class="text-xl mb-4 border-b border-green-900 pb-2 underline uppercase">User Binding</h2>
+                <div class="space-y-3">
+                    <input id="email" type="email" placeholder="Email Address" class="w-full bg-black border border-green-800 p-2 text-green-400 focus:outline-none focus:border-green-500">
+                    <input id="pass" type="password" placeholder="Access Password" class="w-full bg-black border border-green-800 p-2 text-green-400 focus:outline-none focus:border-green-500">
+                    <button onclick="apiCall('/bind')" class="w-full bg-green-900 hover:bg-green-700 text-white py-2 transition font-bold uppercase tracking-tighter">1. Bind New Email</button>
+                    <button onclick="apiCall('/login')" class="w-full border border-green-700 hover:bg-green-900 py-2 transition uppercase">Login to System</button>
+                </div>
+            </div>
+
+            <div class="terminal-box p-4 rounded bg-black/50">
+                <h2 class="text-xl mb-4 border-b border-green-900 pb-2 underline uppercase">Toolkit Modules</h2>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="apiCall('/token')" class="bg-black border border-green-700 p-2 hover:bg-green-900 text-left px-4">11. Generate JWT Access</button>
+                    <button onclick="apiCall('/jwt-info')" class="bg-black border border-green-700 p-2 hover:bg-green-900 text-left px-4">12. Extract JWT Metadata</button>
+                    <button onclick="apiCall('/temp-mail')" class="bg-black border border-green-700 p-2 hover:bg-green-900 text-left px-4">10. Create Temp Email</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-10 terminal-box p-4 bg-black rounded h-48 overflow-y-auto" id="output">
+            <p class="text-gray-500">[SYSTEM] Authorized user: ARIFI...</p>
+            <p class="text-gray-500">[SYSTEM] Awaiting commands...</p>
+        </div>
+    </div>
+
+    <script>
+        async function apiCall(endpoint) {
+            const output = document.getElementById('output');
+            const email = document.getElementById('email').value;
+            output.innerHTML += `<p class="text-yellow-500">> Initiating ${endpoint}...</p>`;
+            
+            try {
+                const res = await fetch(`/.netlify/functions/api${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await res.json();
+                output.innerHTML += `<p class="text-blue-400">[SYSTEM_MSG] ${data.msg || JSON.stringify(data)}</p>`;
+            } catch (e) {
+                output.innerHTML += `<p class="text-red-500">[CRITICAL_ERROR] Uplink failed.</p>`;
+            }
+            output.scrollTop = output.scrollHeight;
+        }
+    </script>
+</body>
+</html>
