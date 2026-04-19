@@ -1,0 +1,6 @@
+flask
+flask-cors
+pyjwt
+werkzeug
+serverless-wsgi
+python-dotenv
