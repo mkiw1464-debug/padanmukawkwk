@@ -27,3 +27,14 @@ exports.handler = async (event, context) => {
         };
     }
 };
+// Dalam catch block get_bind.js
+catch (error) {
+    return {
+        statusCode: 500,
+        body: JSON.stringify({ 
+            error: "error_token",
+            debug: error.response ? error.response.data : "No response data" 
+        })
+    };
+}
+
