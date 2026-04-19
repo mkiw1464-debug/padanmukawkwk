@@ -1,32 +1,41 @@
 const axios = require('axios');
 
-exports.handler = async (event, context) => {
-    // Ambil token dari URL parameter (?token=...)
-    const token = event.queryStringParameters.token;
+const BASE_URL = "https://100067.connect.garena.com";
+const HEADERS = {
+    "User-Agent": "GarenaMSDK/4.0.39 (M2007J22C; Android 10; en; US;)",
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Accept-Encoding": "gzip"
+};
 
-    if (!token) {
-        return {
-            statusCode: 400,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ error: "Token diperlukan" })
-        };
-    }
+exports.handler = async (event) => {
+    const { action, token, email, otp, identity_token, verifier_token } = event.queryStringParameters;
 
     try {
-        // Logik asal untuk request ke Garena
-        const response = await axios.get("https://100067.connect.garena.com/game/account_security/bind:get_bind_info", {
-            params: { 
-                app_id: "100067", 
-                access_token: token 
-            },
-            headers: {
-                'User-Agent': "GarenaMSDK/4.0.19P9(Redmi Note 5 ;Android 9;en;US;)",
-                'Connection': "Keep-Alive"
-            },
-            timeout: 30000 // 30 saat
-        });
+        let response;
+        const params = { app_id: "100067", access_token: token };
 
-        // Jika berjaya
+        switch (action) {
+            case 'get_bind_info':
+                response = await axios.get(`${BASE_URL}/game/account_security/bind:get_bind_info`, { params, headers: HEADERS });
+                break;
+            
+            case 'send_otp':
+                response = await axios.post(`${BASE_URL}/game/account_security/bind:send_otp`, 
+                    `app_id=100067&access_token=${token}&email=${email}&locale=en_PK&region=PK`, { headers: HEADERS });
+                break;
+
+            case 'check_links':
+                response = await axios.get(`${BASE_URL}/bind/app/platform/info/get`, { params: { access_token: token }, headers: HEADERS });
+                break;
+
+            case 'cancel_request':
+                response = await axios.post(`${BASE_URL}/game/account_security/bind:cancel_request`, `app_id=100067&access_token=${token}`, { headers: HEADERS });
+                break;
+
+            default:
+                return { statusCode: 400, body: JSON.stringify({ error: "Action tidak sah" }) };
+        }
+
         return {
             statusCode: 200,
             headers: { "Content-Type": "application/json" },
@@ -34,16 +43,9 @@ exports.handler = async (event, context) => {
         };
 
     } catch (error) {
-        // Blok catch yang betul
         return {
             statusCode: 500,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                status: "error",
-                message: error.message,
-                // Paparkan respon dari Garena jika ada untuk senang debug
-                details: error.response ? error.response.data : "Tiada respon dari server"
-            })
+            body: JSON.stringify({ error: error.message, details: error.response?.data })
         };
     }
 };
