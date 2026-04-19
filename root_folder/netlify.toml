@@ -1,0 +1,15 @@
+[build]
+  # Folder untuk HTML/CSS awak
+  publish = "public"
+  # Folder untuk kod Python api.py
+  functions = "netlify/functions"
+
+[functions]
+  # Penting untuk memastikan dependencies Python diuruskan dengan betul
+  node_bundler = "esbuild"
+
+[[redirects]]
+  # Memudahkan akses API: daripada /.netlify/functions/api ke /api
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
