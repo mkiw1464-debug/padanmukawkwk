@@ -1,0 +1,11 @@
+{
+  "name": "garena-bind-checker",
+  "version": "1.0.0",
+  "description": "Garena Bind Info Checker via Netlify Functions",
+  "main": "index.html",
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "author": "Arifi",
+  "license": "ISC"
+}
